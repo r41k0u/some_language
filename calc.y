@@ -7,8 +7,9 @@
 
   int flag=0;
   static std::map<std::string, int> vars;
-   int yylex(void);
+  int yylex(void);
   inline void yyerror(const char *s) { std::cout << s << std::endl; flag = 1; std::cout << "Invalid\n";}
+  extern FILE *yyin;
 %}
 
 %union {int i; std::string *s;}
@@ -70,9 +71,13 @@ extern int yylex();
 extern int yyparse();
 int main()
 {
-   printf("\nEnter Any Arithmetic Expression which can have operations Addition, Subtraction, Multiplication, Division, Modulus and Round brackets:\n");
-  
-   yyparse();
+   //printf("\nEnter Any Arithmetic Expression which can have operations Addition, Subtraction, Multiplication, Division, Modulus and Round brackets:\n");
+   FILE *fp;
+   fp = fopen("sample.txt", "r");
+   yyin = fp;
+
+   for (int i = 0; i < 1; i++) {
+   yyparse();}
    if(flag==0)
    printf("\nEntered arithmetic expression is Valid\n\n");
 
