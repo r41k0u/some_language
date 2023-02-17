@@ -69,14 +69,14 @@ ArithmeticExpression: E{
 //driver code
 extern int yylex();
 extern int yyparse();
-int main()
+int main(int arc, char** argv)
 {
    //printf("\nEnter Any Arithmetic Expression which can have operations Addition, Subtraction, Multiplication, Division, Modulus and Round brackets:\n");
    FILE *fp;
-   fp = fopen("sample.txt", "r");
+   fp = fopen(argv[1], "r");
    yyin = fp;
 
-   for (int i = 0; i < 1; i++) {
+   for (int i = 0; i < atoi(argv[2]); i++) {
    yyparse();}
    if(flag==0)
    printf("\nEntered arithmetic expression is Valid\n\n");
