@@ -14,6 +14,7 @@ duro return '%';
 expulso return '^';
 sonorus return '(';
 silencio return ')';
+lumos return PRINT;
 [_[:alpha:]][_[:alnum:]]* {yylval.s = new std::string(yytext); return VAR;}
 [0-9]+ {yylval.i=atoi(yytext); return NUMBER;}
 [ \t] ;

@@ -16,9 +16,9 @@
 
 %token<i> NUMBER 
 %token<s> VAR 
-%token TEMP
+%token TEMP PRINT
 %type<i> E
-%type<i> ArithmeticExpression
+%type<i> print_var
 
 %right '='
 
@@ -32,15 +32,11 @@
   
 /* Rule Section */
 %%
-  
-ArithmeticExpression: E{
-  
-         printf("\nResult=%d\n", $$);
-  
-         return 0;
-  
-        };
- E : NUMBER {$$=$1;}
+
+print_var: PRINT print_var {printf("%d\n", $2);}
+ | E {$$ = $1;};
+
+ E: NUMBER {$$=$1;}
 
  | VAR {$$ = vars[*$1]; delete $1;}
 
@@ -71,6 +67,7 @@ extern int yylex();
 extern int yyparse();
 int main(int argc, char** argv)
 {
+   //yydebug = 1;
    if (argc != 3) {
       printf("Incorrect usage\n USAGE:\n ./calc [INPUT FILE] [NUMBER OF LINES IN INPUT]\n");
       return 1;
@@ -86,7 +83,7 @@ int main(int argc, char** argv)
    for (int i = 0; i < atoi(argv[2]); i++) {
    yyparse();}
    if(flag==0)
-   printf("\nEntered arithmetic expression is Valid\n\n");
+   //printf("\nEntered arithmetic expression is Valid\n\n");
 
    return 0;
 }
