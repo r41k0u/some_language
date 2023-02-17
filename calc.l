@@ -16,6 +16,7 @@ sonorus return '(';
 silencio return ')';
 lumos return PRINT;
 [_[:alpha:]][_[:alnum:]]* {yylval.s = new std::string(yytext); return VAR;}
+\"[^"\n]*["\n] {yylval.s = new std::string(yytext); return STR;}
 [0-9]+ {yylval.i=atoi(yytext); return NUMBER;}
 [ \t] ;
   

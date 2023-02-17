@@ -15,7 +15,7 @@
 %union {int i; std::string *s;}
 
 %token<i> NUMBER 
-%token<s> VAR 
+%token<s> VAR STR
 %token TEMP PRINT
 %type<i> E
 %type<i> print_var
@@ -32,6 +32,11 @@
   
 /* Rule Section */
 %%
+
+all: print_var {;}
+| show_str {;};
+
+show_str: STR {printf("got string %s\n", $1->c_str());};
 
 print_var: PRINT print_var {printf("%d\n", $2);}
  | E {$$ = $1;};
