@@ -16,20 +16,28 @@
 
 %token<i> NUMBER 
 %token<s> VAR STR
-%token TEMP PRINT
+%token TEMP PRINT LE GE EQ NEQ LT GT AND OR XOR NOT
 %type<i> E
 %type<i> print_var
+
+%right '^'
 
 %right '='
 
 %left '+' '-'
   
 %left '*' '/' '%'
-  
+
 %left '(' ')'
 
 %right TEMP
-  
+
+%left GE NEQ LT GT LE EQ
+
+%left AND OR XOR
+
+%left NOT
+
 /* Rule Section */
 %%
 
@@ -46,6 +54,26 @@ print_var: PRINT print_var {printf("%d\n", $2);}
  | VAR {$$ = vars[*$1]; delete $1;}
 
  | VAR '=' E {$$ = vars[*$1] = $3; delete $1;}
+ 
+ | E LT E {$$ = ($1 < $3);}
+ 
+ | E GT E {$$ = ($1 > $3);}
+
+ | E EQ E {$$ = ($1 == $3);}
+ 
+ | E LE E {$$ = ($1 <= $3);}
+
+ | E GE E {$$ = ($1 >= $3);}
+ 
+ | E NEQ E {$$ = ($1 != $3);}
+
+ | E XOR E {$$ = $1 ^ $3;}
+
+ | E OR E {$$ = $1 || $3;}
+
+ | E AND E {$$ = $1 && $3;}
+
+ | NOT E {$$ = !$2;}
  
  |E'+'E {$$ = $1 + $3;}
   
@@ -87,8 +115,6 @@ int main(int argc, char** argv)
 
    for (int i = 0; i < atoi(argv[2]); i++) {
    yyparse();}
-   if(flag==0)
-   //printf("\nEntered arithmetic expression is Valid\n\n");
 
    return 0;
 }

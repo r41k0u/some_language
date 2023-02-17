@@ -11,10 +11,17 @@ diffindo return '-';
 reducto return '/';
 portus return '*';
 duro return '%';
-expulso return '^';
-sonorus return '(';
-silencio return ')';
+expulso return XOR;
 lumos return PRINT;
+ascendio return AND;
+avifors return OR;
+confringo return NOT;
+== return EQ;
+\<= return GE;
+=< return LE;
+> return GT;
+\< return LT;
+!= return NEQ;
 [_[:alpha:]][_[:alnum:]]* {yylval.s = new std::string(yytext); return VAR;}
 \"[^"\n]*["\n] {yylval.s = new std::string(yytext); return STR;}
 [0-9]+ {yylval.i=atoi(yytext); return NUMBER;}
