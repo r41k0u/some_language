@@ -69,11 +69,18 @@ ArithmeticExpression: E{
 //driver code
 extern int yylex();
 extern int yyparse();
-int main(int arc, char** argv)
+int main(int argc, char** argv)
 {
+   if (argc != 3) {
+      printf("Incorrect usage\n USAGE:\n ./calc [INPUT FILE] [NUMBER OF LINES IN INPUT]\n");
+      return 1;
+   }
    //printf("\nEnter Any Arithmetic Expression which can have operations Addition, Subtraction, Multiplication, Division, Modulus and Round brackets:\n");
    FILE *fp;
-   fp = fopen(argv[1], "r");
+   if ((fp = fopen(argv[1], "r")) == nullptr) {
+      printf("Input file doesn't exist\n");
+      return 1;
+   }
    yyin = fp;
 
    for (int i = 0; i < atoi(argv[2]); i++) {
