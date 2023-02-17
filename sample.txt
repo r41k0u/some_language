@@ -1,7 +1,2 @@
-x = (5 reparo 5) reparo 10
-lumos x
-y = (5 ascendio 5)
-lumos y
-z = (5 != 5)
-lumos z
-"haha"
+if ( 1<0 ) { lumos 1;} else { lumos 2;} 
+lumos 5;
