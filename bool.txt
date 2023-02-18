@@ -1,0 +1,2 @@
+x = (5 ascendio (2 expulso 2));
+lumos x;

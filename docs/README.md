@@ -8,7 +8,13 @@
 * **expulso** : XOR operator.  
 * **ascendio** : AND operator.  
 * **avifors** : OR operator.  
-* **confringo** : NOT operator.  
+* **confringo** : NOT operator.
+* **equo** : == operator.
+* **amato** : >= operator.
+* **animo** : <= operator.
+* **anapneo** : > operator.
+* **calvorio** : < operator.
+* **confundo** : != operator.  
 * **expecto** : the *if* condition.  
 * **patronum** : the *else* statement.  
-* **alhomora** : the *while* loop.  
+* **alohomora** : the *while* loop.  
