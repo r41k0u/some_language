@@ -33,10 +33,10 @@ static NODE *leaf(int typ, int value);
 static NODE *leaf_str(int typ, std::string *value);
 static NODE *triple(int op, NODE *left, NODE *right, NODE *third);
 static void freeall(NODE *np);
-int sym[26];
+int sym[26] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 %}
 
-%union {int i; std::string *s; struct nnode *np;}
+%union {int i; char s; struct nnode *np;}
 
 %token<i> NUMBER 
 %token<s> VAR
@@ -72,7 +72,7 @@ prg: prg stmt {execute($2); freeall($2);}
 stmt: ';' {$$ = node(';', NNULL, NNULL);}
  | E ';' {$$ = $1;}
  | PRINT E ';' {$$ = node(PRINT, $2, NNULL);}
- | VAR '=' E {$$ = node('=', leaf_str(VAR, $1), $3);}
+ | VAR '=' E {$$ = node('=', leaf(VAR, $1), $3);}
  | WHILE '(' E ')' stmt {$$ = node(WHILE, $3, $5);}
  | IF '(' E ')' stmt ELSE stmt {$$ = triple(IF, $3, $5, $7);}
  | IF '(' E ')' stmt {$$ = triple(IF, $3, $5, NNULL);}
@@ -83,7 +83,7 @@ stl: stmt {$$ = $1;}
 
 E: NUMBER {$$ = leaf(NUMBER, $1);}
 
- | VAR {$$ = leaf_str(VAR, $1);}
+ | VAR {$$ = leaf(VAR, $1);}
  
  | E LT E {$$ = node(LT, $1, $3);}
  
@@ -201,10 +201,14 @@ static void freeall(NODE *np)
 
 int execute(NODE *np)
 {
+    if (!np)
+    {
+        return 0;
+    }
     switch (np->oprtr)
     {
         case NUMBER: return np->left.value;
-        case VAR: return vars[np->left.str];
+        case VAR: return sym[np->left.value];
         case '+': return (execute(np->LEFT) + execute(np->RIGHT));
         case '-': return (execute(np->LEFT) - execute(np->RIGHT));
         case '*': return (execute(np->LEFT) * execute(np->RIGHT));
@@ -221,7 +225,7 @@ int execute(NODE *np)
         case NOT: return !(np->left.value);
         case PRINT: printf("%d\n", execute(np->LEFT)); return 0;
         case ';': execute(np->LEFT); return execute(np->RIGHT);
-        case '=': return vars[np->left.str] = execute(np->RIGHT);
+        case '=': sym[np->left.np->left.value] = execute(np->RIGHT); return sym[np->left.np->left.value];
         case WHILE:
             while (execute(np->LEFT))
             {

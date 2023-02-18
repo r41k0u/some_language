@@ -1,2 +1,10 @@
-if ( 1<0 ) { lumos 1;} else { lumos 2;} 
-lumos 5;
+x = 0;
+while (x < 100)
+{
+    lumos x;
+    x = x + 1;
+    if (x > 90)
+    {
+        lumos 1000;
+    }
+}
