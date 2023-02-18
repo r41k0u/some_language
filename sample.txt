@@ -2,7 +2,7 @@ x = 0;
 alhomora (x < 100)
 {
     lumos x;
-    x = x + 1;
+    x = x reparo 1;
     expecto (x > 90)
     {
         lumos 1000;
