@@ -22,9 +22,9 @@ confringo return NOT;
 > return GT;
 \< return LT;
 != return NEQ;
-while return WHILE;
-if return IF;
-else return ELSE;
+alhomora return WHILE;
+expecto return IF;
+patronum return ELSE;
 [_[:alpha:]][_[:alnum:]]* {yylval.i = ((char) yytext[0]) - 'a'; return VAR;}
 [0-9]+ {yylval.i=atoi(yytext); return NUMBER;}
 [ \t\n] ; 

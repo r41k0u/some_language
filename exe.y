@@ -8,7 +8,7 @@
   typedef union {
         int value;
         struct nnode *np;
-        std::string str;
+        // std::string str;
 } ITEM;
 
   typedef struct nnode {
@@ -161,7 +161,7 @@ static NODE *leaf_str(int typ, std::string *value)
         NODE *np = nalloc();
 
         np->oprtr = typ;
-        np->left.str = *value;
+        /* np->left.str = *value; */
         return np;
 }
 

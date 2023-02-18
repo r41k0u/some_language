@@ -1,9 +1,9 @@
 x = 0;
-while (x < 100)
+alhomora (x < 100)
 {
     lumos x;
     x = x + 1;
-    if (x > 90)
+    expecto (x > 90)
     {
         lumos 1000;
     }
