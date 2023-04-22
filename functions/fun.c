@@ -432,10 +432,3 @@ yyerror(char *s, ...)
   vfprintf(stderr, s, ap);
   fprintf(stderr, "\n");
 }
-
-int
-main()
-{
-  int yydebug = 1;
-  return yyparse();
-}

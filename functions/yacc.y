@@ -42,18 +42,16 @@
 
 %%
 
-stmt: IF exp THEN '{' list '}'           { $$ = newflow('I', $2, $5, NULL); }
-   | IF exp THEN '{' list '}' ELSE '{' list '}'  { $$ = newflow('I', $2, $5, $9); }
-   | WHILE exp DO '{' list '}'           { $$ = newflow('W', $2, $5, NULL); }
-   | exp
+stmt: IF '(' exp ')' stmt           { $$ = newflow('I', $3, $5, NULL); }
+   | IF '(' exp ')' stmt ELSE stmt  { $$ = newflow('I', $3, $5, $7); }
+   | WHILE '(' exp ')' stmt        { $$ = newflow('W', $3, $5, NULL); }
+   | exp EOL                   { $$ = $1; }
+   | '{' list '}'          { $$ = $2; }
+   | EOL                      { $$ = NULL; }
 ;
 
-list: /* nothing */ { $$ = NULL; }
-   | stmt ';' list { if ($3 == NULL)
-	                $$ = $1;
-                      else
-			$$ = newast('L', $1, $3);
-                    }
+list: stmt
+   | list stmt {$$ = newast('L', $1, $2);}
    ;
 
 exp: exp CMP exp          { $$ = newcmp($2, $1, $3); }
@@ -79,7 +77,7 @@ symlist: NAME       { $$ = newsymlist($1, NULL); }
 ;
 
 calclist: /* nothing */
-  | calclist stmt EOL {
+  | calclist stmt {
      eval($2);
      treefree($2);
     }
@@ -90,3 +88,9 @@ calclist: /* nothing */
   | calclist error EOL { yyerrok; }
  ;
 %%
+int
+main()
+{
+  //yydebug = 1;
+  return yyparse();
+}
