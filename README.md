@@ -10,11 +10,9 @@ cd some-language
 ##### Build Steps for the Project!
 
 ```
-yacc -dtv calc.y
-g++ -c y.tab.c
-flex calc.l
-g++ -c lex.yy.c
-g++ -o calc y.tab.o lex.yy.o
+bison -d yacc.y
+flex lex.l
+cc y.tab.c lex.yy.c fun.c
 ```
 
 ## Features
