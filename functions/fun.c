@@ -1,12 +1,3 @@
-/* Companion source code for "flex & bison", published by O'Reilly
- * Media, ISBN 978-0-596-15597-1
- * Copyright (c) 2009, Taughannock Networks. All rights reserved.
- * See the README file for license conditions and contact info.
- * $Header: /home/johnl/flnb/code/RCS/fb3-2funcs.c,v 2.1 2009/11/08 02:53:18 johnl Exp $
- */
-/*
- * helper functions for fb3-2
- */
 #  include <stdio.h>
 #  include <stdlib.h>
 #  include <stdarg.h>
@@ -19,44 +10,18 @@ struct symbol symtab[NHASH];
 
 /* hash a symbol */
 static unsigned
-symhash(char *sym)
+calculate_hash(char *sym)
 {
   unsigned int hash = 0;
   unsigned c;
 
-  while(c = *sym++) hash = hash*9 ^ c;
+  while(c == *sym++) hash = hash*9 ^ c;
 
   return hash;
 }
 
-struct symbol *
-lookup(char* sym)
-{
-  struct symbol *sp = &symtab[symhash(sym)%NHASH];
-  int scount = NHASH;		/* how many have we looked at */
-
-  while(--scount >= 0) {
-    if(sp->name && !strcmp(sp->name, sym)) { return sp; }
-
-    if(!sp->name) {		/* new entry */
-      sp->name = strdup(sym);
-      sp->value = 0;
-      sp->func = NULL;
-      sp->syms = NULL;
-      return sp;
-    }
-
-    if(++sp >= symtab+NHASH) sp = symtab; /* try the next entry */
-  }
-  yyerror("symbol table overflow\n");
-  abort(); /* tried them all, table is full */
-
-}
-
-
-
 struct ast *
-newast(int nodetype, struct ast *l, struct ast *r)
+create_ast(int nodetype, struct ast *l, struct ast *r)
 {
   struct ast *a = malloc(sizeof(struct ast));
   
@@ -65,23 +30,36 @@ newast(int nodetype, struct ast *l, struct ast *r)
     exit(0);
   }
   a->nodetype = nodetype;
-  a->l = l;
   a->r = r;
+  a->l = l;
+  
   return a;
 }
 
-struct ast *
-newnum(double d)
+struct symbol *
+find_or_create_symbol(char* sym)
 {
-  struct numval *a = malloc(sizeof(struct numval));
-  
-  if(!a) {
-    yyerror("out of space");
-    exit(0);
+  struct symbol *sp = &symtab[calculate_hash(sym) % NHASH];
+  int scount = NHASH;    /* how many have we looked at */
+
+  while (--scount >= 0) {
+    if (sp->name && !strcmp(sp->name, sym)) {
+      return sp; // found symbol, return pointer to it
+    }
+
+    if (!sp->name) {    /* new entry */
+      sp->name = strdup(sym);
+      sp->value = 0;
+      sp->func = NULL;
+      sp->syms = NULL;
+      return sp; // created new symbol, return pointer to it
+    }
+
+    if (++sp >= symtab + NHASH) sp = symtab; /* try the next entry */
   }
-  a->nodetype = 'K';
-  a->number = d;
-  return (struct ast *)a;
+
+  yyerror("symbol table overflow\n");
+  abort(); // tried them all, table is full
 }
 
 struct ast *
@@ -99,19 +77,42 @@ newcmp(int cmptype, struct ast *l, struct ast *r)
   return a;
 }
 
-struct ast *
-newfunc(int functype, struct ast *l)
+struct symlist *
+new_symbol_list_node(struct symbol *symbol, struct symlist *next_node)
 {
-  struct fncall *a = malloc(sizeof(struct fncall));
+  struct symlist *new_node = malloc(sizeof(struct symlist));
   
-  if(!a) {
+  if(!new_node) {
     yyerror("out of space");
     exit(0);
   }
-  a->nodetype = 'F';
-  a->l = l;
-  a->functype = functype;
-  return (struct ast *)a;
+  new_node->sym = symbol;
+  new_node->next = next_node;
+  return new_node;
+}
+
+void freesymlist(struct symlist *list)
+{
+  struct symlist *next;
+
+  while(list) {
+    next = list->next;
+    free(list);
+    list = next;
+  }
+}
+
+struct ast *newnum(double val) {
+  struct numval *node = malloc(sizeof(struct numval));
+  
+  if(!node) {
+    yyerror("out of space");
+    exit(0);
+  }
+
+  node->nodetype = 'K';
+  node->number = val;
+  return (struct ast *)node;
 }
 
 struct ast *
@@ -130,22 +131,41 @@ newcall(struct symbol *s, struct ast *l)
 }
 
 struct ast *
-newref(struct symbol *s)
+newfunc(int functype, struct ast *l)
 {
-  struct symref *a = malloc(sizeof(struct symref));
+  struct fncall *a = malloc(sizeof(struct fncall));
   
   if(!a) {
     yyerror("out of space");
     exit(0);
   }
-  a->nodetype = 'N';
-  a->s = s;
+  a->nodetype = 'F';
+  a->l = l;
+  a->functype = functype;
   return (struct ast *)a;
 }
 
 struct ast *
-newasgn(struct symbol *s, struct ast *v)
+newref(struct symbol *s)
 {
+  struct symref *ref = malloc(sizeof(struct symref));
+  
+  if(!ref) {
+    yyerror("out of space");
+    exit(0);
+  }
+  ref->nodetype = 'N';
+  ref->s = s;
+  return (struct ast *)ref;
+}
+
+struct ast *
+create_assignment(struct symbol *s, struct ast *v)
+{
+  if (!s) {
+    yyerror("undefined variable");
+    exit(1);
+  }
   struct symasgn *a = malloc(sizeof(struct symasgn));
   
   if(!a) {
@@ -153,58 +173,33 @@ newasgn(struct symbol *s, struct ast *v)
     exit(0);
   }
   a->nodetype = '=';
-  a->s = s;
   a->v = v;
+  a->s = s;
+  
   return (struct ast *)a;
 }
 
 struct ast *
-newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *el)
+newflow(int nodetype, struct ast *condition, struct ast *true_branch, struct ast *false_branch)
 {
-  struct flow *a = malloc(sizeof(struct flow));
+  struct flow *flow_node = malloc(sizeof(struct flow));
   
-  if(!a) {
+  if(!flow_node) {
     yyerror("out of space");
     exit(0);
   }
-  a->nodetype = nodetype;
-  a->cond = cond;
-  a->tl = tl;
-  a->el = el;
-  return (struct ast *)a;
-}
-
-struct symlist *
-newsymlist(struct symbol *sym, struct symlist *next)
-{
-  struct symlist *sl = malloc(sizeof(struct symlist));
-  
-  if(!sl) {
-    yyerror("out of space");
-    exit(0);
-  }
-  sl->sym = sym;
-  sl->next = next;
-  return sl;
-}
-
-void
-symlistfree(struct symlist *sl)
-{
-  struct symlist *nsl;
-
-  while(sl) {
-    nsl = sl->next;
-    free(sl);
-    sl = nsl;
-  }
+  flow_node->nodetype = nodetype;
+  flow_node->cond = condition;
+  flow_node->tl = true_branch;
+  flow_node->el = false_branch;
+  return (struct ast *)flow_node;
 }
 
 /* define a function */
 void
 dodef(struct symbol *name, struct symlist *syms, struct ast *func)
 {
-  if(name->syms) symlistfree(name->syms);
+  if(name->syms) freesymlist(name->syms);
   if(name->func) treefree(name->func);
   name->syms = syms;
   name->func = func;
@@ -308,77 +303,78 @@ callbuiltin(struct fncall *f)
  }
 }
 
-static double
-calluser(struct ufncall *f)
+static double calluser(struct ufncall *func)
 {
-  struct symbol *fn = f->s;	/* function name */
-  struct symlist *sl;		/* dummy arguments */
-  struct ast *args = f->l;	/* actual arguments */
-  double *oldval, *newval;	/* saved arg values */
-  double v;
-  int nargs;
+  struct symbol *fn = func->s;	/* function name */
+  struct symlist *dummy_args;	/* dummy arguments */
+  struct ast *actual_args = func->l;	/* actual arguments */
+  double *old_val, *new_val;	/* saved arg values */
+  double result;
+  int num_args;
   int i;
 
-  if(!fn->func) {
+  if (!fn->func) {
     yyerror("call to undefined function", fn->name);
     return 0;
   }
 
   /* count the arguments */
-  sl = fn->syms;
-  for(nargs = 0; sl; sl = sl->next)
-    nargs++;
+  dummy_args = fn->syms;
+  for (num_args = 0; dummy_args; dummy_args = dummy_args->next)
+    num_args++;
 
   /* prepare to save them */
-  oldval = (double *)malloc(nargs * sizeof(double));
-  newval = (double *)malloc(nargs * sizeof(double));
-  if(!oldval || !newval) {
-    yyerror("Out of space in %s", fn->name); return 0.0;
+  old_val = (double *)malloc(num_args * sizeof(double));
+  new_val = (double *)malloc(num_args * sizeof(double));
+  if (!old_val || !new_val) {
+    yyerror("Out of space in %s", fn->name);
+    return 0.0;
   }
   
   /* evaluate the arguments */
-  for(i = 0; i < nargs; i++) {
-    if(!args) {
+  for (i = 0; i < num_args; i++) {
+    if (!actual_args) {
       yyerror("too few args in call to %s", fn->name);
-      free(oldval); free(newval);
+      free(old_val); 
+      free(new_val);
       return 0;
     }
 
-    if(args->nodetype == 'L') {	/* if this is a list node */
-      newval[i] = eval(args->l);
-      args = args->r;
+    if (actual_args->nodetype == 'L') {	/* if this is a list node */
+      new_val[i] = eval(actual_args->l);
+      actual_args = actual_args->r;
     } else {			/* if it's the end of the list */
-      newval[i] = eval(args);
-      args = NULL;
+      new_val[i] = eval(actual_args);
+      actual_args = NULL;
     }
   }
 		     
   /* save old values of dummies, assign new ones */
-  sl = fn->syms;
-  for(i = 0; i < nargs; i++) {
-    struct symbol *s = sl->sym;
+  dummy_args = fn->syms;
+  for (i = 0; i < num_args; i++) {
+    struct symbol *sym = dummy_args->sym;
 
-    oldval[i] = s->value;
-    s->value = newval[i];
-    sl = sl->next;
+    old_val[i] = sym->value;
+    sym->value = new_val[i];
+    dummy_args = dummy_args->next;
   }
 
-  free(newval);
+  free(new_val);
 
   /* evaluate the function */
-  v = eval(fn->func);
+  result = eval(fn->func);
 
   /* put the dummies back */
-  sl = fn->syms;
-  for(i = 0; i < nargs; i++) {
-    struct symbol *s = sl->sym;
+  dummy_args = fn->syms;
+  for (i = 0; i < num_args; i++) {
+    struct symbol *sym = dummy_args->sym;
 
-    s->value = oldval[i];
-    sl = sl->next;
+    sym->value = old_val[i];
+    dummy_args = dummy_args->next;
   }
 
-  free(oldval);
-  return v;
+  free(old_val);
+  return result;
 }
 
 
