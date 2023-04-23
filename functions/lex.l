@@ -61,6 +61,10 @@ enddef  {return ENDDEF;}
 [0-9]+"."[0-9]*{EXP}? |
 "."?[0-9]+{EXP}? { yylval.d = atof(yytext); return NUMBER; }
 
+
+\#.*        /* ignore single-line comments */
+\#{3}[\s\S]*?\#{3}  /* ignore multi-line comments */ 
+
 "//".*  
 [ \t\n]   /* ignore white space */ 
 \\\n    printf("c> "); /* ignore line continuation */
