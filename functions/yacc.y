@@ -26,7 +26,7 @@
 %token <fn> FUNC
 %token EOL
 
-%token IF ELSE WHILE LET ENDIF THEN DO
+%token IF ELSE WHILE LET ENDIF THEN DO ENDDEF
 
 
 %nonassoc <fn> CMP
@@ -89,9 +89,9 @@ calclist: /* nothing */
      eval($2);
      treefree($2);
     }
-  | calclist LET NAME '(' symlist ')' '=' list {
+  | calclist LET NAME '(' symlist ')' '=' list ENDDEF {
                        dodef($3, $5, $8);
-                       printf("Defined %s\n> ", $3->name); }
+                       printf("Defined %s\n", $3->name); }
 
   | calclist error EOL { yyerrok; }
  ;

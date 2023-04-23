@@ -45,8 +45,9 @@ expecto    { return IF; }
 patronum  { return ELSE; }
 alohomora { return WHILE; }
 "do"    { return DO; }
-"let"   { return LET;}
+let   { return LET;}
 endif   {return ENDIF;}
+enddef  {return ENDDEF;}
 
  /* built in functions */
 "sqrt"  { yylval.fn = B_sqrt; return FUNC; }
