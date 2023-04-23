@@ -19,7 +19,7 @@ struct symbol {		/* a variable name */
 /* simple symtab of fixed size */
 #define NHASH 9997
 
-struct symbol *lookup(char*);
+struct symbol *find_or_create_symbol(char*);
 
 /* list of symbols, for an argument list */
 struct symlist {
@@ -27,8 +27,8 @@ struct symlist {
   struct symlist *next;
 };
 
-struct symlist *newsymlist(struct symbol *sym, struct symlist *next);
-void symlistfree(struct symlist *sl);
+struct symlist *new_symbol_list_node(struct symbol *sym, struct symlist *next);
+void freesymlist(struct symlist *sl);
 
 /* node types
  *  + - * / |
@@ -96,12 +96,12 @@ struct symasgn {
 };
 
 /* build an AST */
-struct ast *newast(int nodetype, struct ast *l, struct ast *r);
+struct ast *create_ast(int nodetype, struct ast *l, struct ast *r);
 struct ast *newcmp(int cmptype, struct ast *l, struct ast *r);
 struct ast *newfunc(int functype, struct ast *l);
 struct ast *newcall(struct symbol *s, struct ast *l);
 struct ast *newref(struct symbol *s);
-struct ast *newasgn(struct symbol *s, struct ast *v);
+struct ast *create_assignment(struct symbol *s, struct ast *v);
 struct ast *newnum(double d);
 struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *tr);
 

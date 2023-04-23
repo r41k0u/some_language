@@ -56,7 +56,7 @@ enddef  {return ENDDEF;}
 "lumos" { yylval.fn = B_print; return FUNC; }
 
  /* names */
-[a-zA-Z][a-zA-Z0-9]*  { yylval.s = lookup(yytext); return NAME; }
+[a-zA-Z][a-zA-Z0-9]*  { yylval.s = find_or_create_symbol(yytext); return NAME; }
 
 [0-9]+"."[0-9]*{EXP}? |
 "."?[0-9]+{EXP}? { yylval.d = atof(yytext); return NUMBER; }

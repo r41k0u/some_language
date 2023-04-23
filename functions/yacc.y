@@ -55,35 +55,35 @@ o_stmt: IF '(' exp ')' stmt ENDIF { $$ = newflow('I', $3, $5, NULL); }
 
 c_stmt: exp EOL                   { $$ = $1; }
    | '{' list '}'          { $$ = $2; }
-   | EOL                     { $$ = newast('L', NULL, NULL); }
+   | EOL                     { $$ = create_ast('L', NULL, NULL); }
    | IF '(' exp ')' c_stmt ELSE c_stmt ENDIF  { $$ = newflow('I', $3, $5, $7); }
    | WHILE '(' exp ')' c_stmt        { $$ = newflow('W', $3, $5, NULL); }
    ;
 
 list: stmt
-   | list stmt {$$ = newast('L', $1, $2);}
+   | list stmt {$$ = create_ast('L', $1, $2);}
    ;
 
 exp: exp CMP exp          { $$ = newcmp($2, $1, $3); }
-   | exp '+' exp          { $$ = newast('+', $1,$3); }
-   | exp '-' exp          { $$ = newast('-', $1,$3);}
-   | exp '*' exp          { $$ = newast('*', $1,$3); }
-   | exp '/' exp          { $$ = newast('/', $1,$3); }
-   | '|' exp              { $$ = newast('|', $2, NULL); }
+   | exp '+' exp          { $$ = create_ast('+', $1,$3); }
+   | exp '-' exp          { $$ = create_ast('-', $1,$3);}
+   | exp '*' exp          { $$ = create_ast('*', $1,$3); }
+   | exp '/' exp          { $$ = create_ast('/', $1,$3); }
+   | '|' exp              { $$ = create_ast('|', $2, NULL); }
    | '(' exp ')'          { $$ = $2; }
-   | '-' exp %prec UMINUS { $$ = newast('M', $2, NULL); }
+   | '-' exp %prec UMINUS { $$ = create_ast('M', $2, NULL); }
    | NUMBER               { $$ = newnum($1); }
    | FUNC '(' explist ')' { $$ = newfunc($1, $3); }
    | NAME                 { $$ = newref($1); }
-   | NAME '=' exp         { $$ = newasgn($1, $3); }
+   | NAME '=' exp         { $$ = create_assignment($1, $3); }
    | NAME '(' explist ')' { $$ = newcall($1, $3); }
 ;
 
 explist: exp
- | exp ',' explist  { $$ = newast('L', $1, $3); }
+ | exp ',' explist  { $$ = create_ast('L', $1, $3); }
 ;
-symlist: NAME       { $$ = newsymlist($1, NULL); }
- | NAME ',' symlist { $$ = newsymlist($1, $3); }
+symlist: NAME       { $$ = new_symbol_list_node($1, NULL); }
+ | NAME ',' symlist { $$ = new_symbol_list_node($1, $3); }
 ;
 
 calclist: /* nothing */
@@ -106,6 +106,7 @@ calclist: /* nothing */
 // member           : calclist
 //                   | data_member
 // data_member      : NAME
+
 
 
 %%
