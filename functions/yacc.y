@@ -28,8 +28,7 @@ extern FILE *yyin;
 %token <fn> FUNC
 %token EOL
 
-%token IF ELSE WHILE LET ENDIF THEN DO ENDDEF
-
+%token IF ELSE WHILE LET ENDIF ENDDEF CLASS ENDCLASS MAKEOBJ
 
 %nonassoc <fn> CMP
 %right '='
@@ -58,6 +57,9 @@ c_stmt: exp EOL                   { $$ = $1; }
    | EOL                     { $$ = create_ast('L', NULL, NULL); }
    | IF '(' exp ')' c_stmt ELSE c_stmt ENDIF  { $$ = newflow('I', $3, $5, $7); }
    | WHILE '(' exp ')' c_stmt        { $$ = newflow('W', $3, $5, NULL); }
+   | CLASS NAME NAME EOL ENDCLASS   {$$ = create_ast('L', NULL, NULL);}
+   | CLASS NAME LET NAME '(' symlist ')' '=' list ENDDEF ENDCLASS {$$ = create_ast('L', NULL, NULL);}
+   | MAKEOBJ NAME NAME EOL {$$ = create_ast('L', NULL, NULL);}
    ;
 
 list: stmt
@@ -97,17 +99,6 @@ calclist: /* nothing */
 
   | calclist error EOL { yyerrok; }
  ;
-
-
-// class_declaration : CLASS NAME '{' member_list '}'
-
-// member_list      : /* empty */
-//                   | member_list member
-// member           : calclist
-//                   | data_member
-// data_member      : NAME
-
-
 
 %%
 int main(int argc, char *argv[])

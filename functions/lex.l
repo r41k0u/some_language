@@ -9,7 +9,7 @@
 %option noyywrap nodefault yylineno
 %{
 # include "hdr.h"
-# include "yacc.tab.h"
+# include "y.tab.h"
 %}
 
 /* float exponent */
@@ -41,13 +41,14 @@ animo    { yylval.fn = 6; return CMP; }
  /* keywords */
 
 expecto    { return IF; }
-"then"  { return THEN; }
 patronum  { return ELSE; }
 alohomora { return WHILE; }
-"do"    { return DO; }
 let   { return LET;}
 endif   {return ENDIF;}
 enddef  {return ENDDEF;}
+makeclass       {return CLASS;}
+endclass    {return ENDCLASS;}
+makeobj     {return MAKEOBJ;}
 
  /* built in functions */
 "sqrt"  { yylval.fn = B_sqrt; return FUNC; }
@@ -60,13 +61,7 @@ enddef  {return ENDDEF;}
 
 [0-9]+"."[0-9]*{EXP}? |
 "."?[0-9]+{EXP}? { yylval.d = atof(yytext); return NUMBER; }
-
-
-\#.*        /* ignore single-line comments */
-\#{3}[\s\S]*?\#{3}  /* ignore multi-line comments */ 
-
-"//".*  
-[ \t\n]   /* ignore white space */ 
+[ \t\n]   /* ignore white space */
 \\\n    printf("c> "); /* ignore line continuation */
 ";"    { return EOL; }
 
