@@ -1,0 +1,12 @@
+let jojo(a) = {
+    lumos(0);
+    lumos(1);
+} enddef
+
+let summer(a,b) = {
+    (a reparo b);
+} enddef
+
+jojo(0);
+
+lumos(summer(2,3));

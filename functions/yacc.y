@@ -10,6 +10,8 @@
 #  include <stdio.h>
 #  include <stdlib.h>
 #  include "hdr.h"
+
+extern FILE *yyin;
 %}
 
 %union {
@@ -97,19 +99,34 @@ calclist: /* nothing */
  ;
 
 
-/* class_declaration : CLASS NAME '{' member_list '}'
+// class_declaration : CLASS NAME '{' member_list '}'
 
-member_list      : 
-                  | member_list member
-member           : calclist
-                  | data_member
-data_member      : NAME */
+// member_list      : /* empty */
+//                   | member_list member
+// member           : calclist
+//                   | data_member
+// data_member      : NAME
+
 
 
 %%
-int
-main()
+int main(int argc, char *argv[])
 {
-  //yydebug = 1;
-  return yyparse();
+   if (argc < 2) {
+        fprintf(stderr, "Usage: %s input_file\n", argv[0]);
+        return 1;
+    }
+
+    FILE *input_file = fopen(argv[1], "r");
+    if (!input_file) {
+        perror("Error opening input file");
+        return 1;
+    }
+
+
+    yyin = input_file;  // assign file pointer to yyin
+    yyparse();
+    fclose(input_file);  // close the input file
+
+   return 0;
 }
