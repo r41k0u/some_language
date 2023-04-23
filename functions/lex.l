@@ -46,6 +46,7 @@ patronum  { return ELSE; }
 alohomora { return WHILE; }
 "do"    { return DO; }
 "let"   { return LET;}
+endif   {return ENDIF;}
 
  /* built in functions */
 "sqrt"  { yylval.fn = B_sqrt; return FUNC; }

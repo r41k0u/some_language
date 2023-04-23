@@ -219,8 +219,8 @@ eval(struct ast *a)
   double v;
 
   if(!a) {
-    yyerror("internal error, null eval");
-    return 0.0;
+    //yyerror("internal error, null eval");
+    return 0;
   }
 
   switch(a->nodetype) {

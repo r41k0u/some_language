@@ -26,7 +26,7 @@
 %token <fn> FUNC
 %token EOL
 
-%token IF THEN ELSE WHILE DO LET
+%token IF ELSE WHILE LET ENDIF THEN DO
 
 
 %nonassoc <fn> CMP
@@ -35,20 +35,28 @@
 %left '*' '/'
 %nonassoc '|' UMINUS
 
-%type <a> exp stmt list explist
+%type <a> exp stmt list explist c_stmt o_stmt
 %type <sl> symlist
 
 %start calclist
 
 %%
 
-stmt: IF '(' exp ')' stmt           { $$ = newflow('I', $3, $5, NULL); }
-   | IF '(' exp ')' stmt ELSE stmt  { $$ = newflow('I', $3, $5, $7); }
-   | WHILE '(' exp ')' stmt        { $$ = newflow('W', $3, $5, NULL); }
-   | exp EOL                   { $$ = $1; }
+stmt: o_stmt {$$ = $1;}
+   | c_stmt {$$ = $1;}
+   ;
+
+o_stmt: IF '(' exp ')' stmt ENDIF { $$ = newflow('I', $3, $5, NULL); }
+   | IF '(' exp ')' c_stmt ELSE o_stmt ENDIF  { $$ = newflow('I', $3, $5, $7); }
+   | WHILE '(' exp ')' o_stmt        { $$ = newflow('W', $3, $5, NULL); }
+   ;
+
+c_stmt: exp EOL                   { $$ = $1; }
    | '{' list '}'          { $$ = $2; }
-   | EOL                      { $$ = NULL; }
-;
+   | EOL                     { $$ = newast('L', NULL, NULL); }
+   | IF '(' exp ')' c_stmt ELSE c_stmt ENDIF  { $$ = newflow('I', $3, $5, $7); }
+   | WHILE '(' exp ')' c_stmt        { $$ = newflow('W', $3, $5, NULL); }
+   ;
 
 list: stmt
    | list stmt {$$ = newast('L', $1, $2);}
@@ -81,7 +89,7 @@ calclist: /* nothing */
      eval($2);
      treefree($2);
     }
-  | calclist LET NAME '(' symlist ')' '=' list EOL {
+  | calclist LET NAME '(' symlist ')' '=' list {
                        dodef($3, $5, $8);
                        printf("Defined %s\n> ", $3->name); }
 
