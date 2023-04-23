@@ -87,6 +87,17 @@ calclist: /* nothing */
 
   | calclist error EOL { yyerrok; }
  ;
+
+
+class_declaration : CLASS NAME '{' member_list '}'
+
+member_list      : /* empty */
+                  | member_list member
+member           : calclist
+                  | data_member
+data_member      : NAME
+
+
 %%
 int
 main()
