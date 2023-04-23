@@ -294,11 +294,11 @@ callbuiltin(struct fncall *f)
 
  switch(functype) {
  case B_sqrt:
-   //return sqrt(v);
+   return sqrt(v);
  case B_exp:
-   //return exp(v);
+   return exp(v);
  case B_log:
-   //return log(v);
+   return log(v);
  case B_print:
    printf("%4.4g\n", v);
    return v;
