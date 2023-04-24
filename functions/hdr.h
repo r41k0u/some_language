@@ -1,13 +1,3 @@
-/* Companion source code for "flex & bison", published by O'Reilly
- * Media, ISBN 978-0-596-15597-1
- * Copyright (c) 2009, Taughannock Networks. All rights reserved.
- * See the README file for license conditions and contact info.
- * $Header: /home/johnl/flnb/code/RCS/fb3-2.h,v 2.1 2009/11/08 02:53:18 johnl Exp $
- */
-/*
- * Declarations for a calculator fb3-1
- */
-
 /* symbol table */
 struct symbol {		/* a variable name */
   char *name;
@@ -30,29 +20,12 @@ struct symlist {
 struct symlist *new_symbol_list_node(struct symbol *sym, struct symlist *next);
 void freesymlist(struct symlist *sl);
 
-/* node types
- *  + - * / |
- *  0-7 comparison ops, bit coded 04 equal, 02 less, 01 greater
- *  M unary minus
- *  L statement list
- *  I IF statement
- *  W WHILE statement
- *  N symbol ref
- *  = assignment
- *  S list of symbols
- *  F built in function call
- *  C user function call
- */ 
-
 enum bifs {			/* built-in functions */
   B_sqrt = 1,
   B_exp,
   B_log,
   B_print
 };
-
-/* nodes in the Abstract Syntax Tree */
-/* all have common initial nodetype */
 
 struct ast {
   int nodetype;
