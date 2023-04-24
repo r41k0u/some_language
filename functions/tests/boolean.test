@@ -1,0 +1,13 @@
+x = 7;
+y = 2;
+lumos((x calvorio 6) expulso (y calvorio 4));
+lumos((x anapneo 5) ascendio (y anapneo 1));
+lumos((x calvorio 6) avifors (y calvorio 4));
+expecto ((x anapneo 5) ascendio (y anapneo 1))
+{
+    lumos(y);
+    expecto ((x calvorio 6) avifors (y calvorio 4))
+    {
+        lumos((x calvorio 6) expulso (y calvorio 4));
+    } endif
+} endif
