@@ -1,9 +1,9 @@
-#  include <stdio.h>
-#  include <stdlib.h>
-#  include <stdarg.h>
-#  include <string.h>
-#  include <math.h>
-#  include "hdr.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <math.h>
+#include "hdr.h"
 
 /* symbol table */
 struct symbol symtab[NHASH];
@@ -15,7 +15,8 @@ calculate_hash(char *sym)
   unsigned int hash = 0;
   unsigned c;
 
-  while(c == *sym++) hash = hash*9 ^ c;
+  while (c == *sym++)
+    hash = hash * 9 ^ c;
 
   return hash;
 }
@@ -24,30 +25,34 @@ struct ast *
 create_ast(int nodetype, struct ast *l, struct ast *r)
 {
   struct ast *a = malloc(sizeof(struct ast));
-  
-  if(!a) {
+
+  if (!a)
+  {
     yyerror("out of space");
     exit(0);
   }
   a->nodetype = nodetype;
   a->r = r;
   a->l = l;
-  
+
   return a;
 }
 
 struct symbol *
-find_or_create_symbol(char* sym)
+find_or_create_symbol(char *sym)
 {
   struct symbol *sp = &symtab[calculate_hash(sym) % NHASH];
-  int scount = NHASH;    /* how many have we looked at */
+  int scount = NHASH; /* how many have we looked at */
 
-  while (--scount >= 0) {
-    if (sp->name && !strcmp(sp->name, sym)) {
+  while (--scount >= 0)
+  {
+    if (sp->name && !strcmp(sp->name, sym))
+    {
       return sp; // found symbol, return pointer to it
     }
 
-    if (!sp->name) {    /* new entry */
+    if (!sp->name)
+    { /* new entry */
       sp->name = strdup(sym);
       sp->value = 0;
       sp->func = NULL;
@@ -55,7 +60,8 @@ find_or_create_symbol(char* sym)
       return sp; // created new symbol, return pointer to it
     }
 
-    if (++sp >= symtab + NHASH) sp = symtab; /* try the next entry */
+    if (++sp >= symtab + NHASH)
+      sp = symtab; /* try the next entry */
   }
 
   yyerror("symbol table overflow\n");
@@ -66,8 +72,9 @@ struct ast *
 newcmp(int cmptype, struct ast *l, struct ast *r)
 {
   struct ast *a = malloc(sizeof(struct ast));
-  
-  if(!a) {
+
+  if (!a)
+  {
     yyerror("out of space");
     exit(0);
   }
@@ -81,8 +88,9 @@ struct symlist *
 new_symbol_list_node(struct symbol *symbol, struct symlist *next_node)
 {
   struct symlist *new_node = malloc(sizeof(struct symlist));
-  
-  if(!new_node) {
+
+  if (!new_node)
+  {
     yyerror("out of space");
     exit(0);
   }
@@ -95,17 +103,20 @@ void freesymlist(struct symlist *list)
 {
   struct symlist *next;
 
-  while(list) {
+  while (list)
+  {
     next = list->next;
     free(list);
     list = next;
   }
 }
 
-struct ast *newnum(double val) {
+struct ast *newnum(double val)
+{
   struct numval *node = malloc(sizeof(struct numval));
-  
-  if(!node) {
+
+  if (!node)
+  {
     yyerror("out of space");
     exit(0);
   }
@@ -119,8 +130,9 @@ struct ast *
 newcall(struct symbol *s, struct ast *l)
 {
   struct ufncall *a = malloc(sizeof(struct ufncall));
-  
-  if(!a) {
+
+  if (!a)
+  {
     yyerror("out of space");
     exit(0);
   }
@@ -134,8 +146,9 @@ struct ast *
 newfunc(int functype, struct ast *l)
 {
   struct fncall *a = malloc(sizeof(struct fncall));
-  
-  if(!a) {
+
+  if (!a)
+  {
     yyerror("out of space");
     exit(0);
   }
@@ -149,8 +162,9 @@ struct ast *
 newref(struct symbol *s)
 {
   struct symref *ref = malloc(sizeof(struct symref));
-  
-  if(!ref) {
+
+  if (!ref)
+  {
     yyerror("out of space");
     exit(0);
   }
@@ -160,22 +174,55 @@ newref(struct symbol *s)
 }
 
 struct ast *
+newClassMem(struct symbol *s, struct symbol *v)
+{
+  struct classMem *ref = malloc(sizeof(struct classMem));
+  if (!ref)
+  {
+    yyerror("out of space");
+    exit(0);
+  }
+  ref->nodetype = 'P';
+  ref->l = s;
+  ref->r = v;
+  return (struct ast *)ref;
+}
+
+struct ast *
+newClassObj(struct symbol *s, struct symbol *v)
+{
+  struct classMem *ref = malloc(sizeof(struct classMem));
+  if (!ref)
+  {
+    yyerror("out of space");
+    exit(0);
+  }
+  ref->nodetype = 'O';
+  ref->l = s;
+  ref->r = v;
+  printf("yo a new class obj\n");
+  return (struct ast *)ref;
+}
+
+struct ast *
 create_assignment(struct symbol *s, struct ast *v)
 {
-  if (!s) {
+  if (!s)
+  {
     yyerror("undefined variable");
     exit(1);
   }
   struct symasgn *a = malloc(sizeof(struct symasgn));
-  
-  if(!a) {
+
+  if (!a)
+  {
     yyerror("out of space");
     exit(0);
   }
   a->nodetype = '=';
   a->v = v;
   a->s = s;
-  
+
   return (struct ast *)a;
 }
 
@@ -183,8 +230,9 @@ struct ast *
 newflow(int nodetype, struct ast *condition, struct ast *true_branch, struct ast *false_branch)
 {
   struct flow *flow_node = malloc(sizeof(struct flow));
-  
-  if(!flow_node) {
+
+  if (!flow_node)
+  {
     yyerror("out of space");
     exit(0);
   }
@@ -196,87 +244,157 @@ newflow(int nodetype, struct ast *condition, struct ast *true_branch, struct ast
 }
 
 /* define a function */
-void
-dodef(struct symbol *name, struct symlist *syms, struct ast *func)
+void dodef(struct symbol *name, struct symlist *syms, struct ast *func)
 {
-  if(name->syms) freesymlist(name->syms);
-  if(name->func) treefree(name->func);
+  if (name->syms)
+    freesymlist(name->syms);
+  if (name->func)
+    treefree(name->func);
   name->syms = syms;
   name->func = func;
 }
 
+void doclassdef(struct symbol *pre, struct symbol *name, struct symlist *syms, struct ast *func)
+{
+  char p[100];
+  strcpy(p, pre->name);
+  strcat(p, strdup("000"));
+  strcat(p, name->name);
+  struct symbol *jojo = find_or_create_symbol(p);
+  dodef(jojo, syms, func);
+}
+
 static double callbuiltin(struct fncall *);
 static double calluser(struct ufncall *);
+
+static double pushClass(struct ast *);
+static double makeObj(struct ast *);
 
 double
 eval(struct ast *a)
 {
   double v;
 
-  if(!a) {
-    //yyerror("internal error, null eval");
+  if (!a)
+  {
+    // yyerror("internal error, null eval");
     return 0;
   }
 
-  switch(a->nodetype) {
+  switch (a->nodetype)
+  {
     /* constant */
-  case 'K': v = ((struct numval *)a)->number; break;
+  case 'K':
+    v = ((struct numval *)a)->number;
+    break;
 
     /* name reference */
-  case 'N': v = ((struct symref *)a)->s->value; break;
+  case 'N':
+    v = ((struct symref *)a)->s->value;
+    break;
+
+  case 'P':
+    v = pushClass(a);
+    break;
+
+  case 'O':
+    v = makeObj(a);
+    break;
 
     /* assignment */
-  case '=': v = ((struct symasgn *)a)->s->value =
-      eval(((struct symasgn *)a)->v); break;
+  case '=':
+    v = ((struct symasgn *)a)->s->value =
+        eval(((struct symasgn *)a)->v);
+    break;
 
     /* expressions */
-  case '+': v = eval(a->l) + eval(a->r); break;
-  case '-': v = eval(a->l) - eval(a->r); break;
-  case '*': v = eval(a->l) * eval(a->r); break;
-  case '/': v = eval(a->l) / eval(a->r); break;
-  case '|': v = fabs(eval(a->l)); break;
-  case 'M': v = -eval(a->l); break;
+  case '+':
+    v = eval(a->l) + eval(a->r);
+    break;
+  case '-':
+    v = eval(a->l) - eval(a->r);
+    break;
+  case '*':
+    v = eval(a->l) * eval(a->r);
+    break;
+  case '/':
+    v = eval(a->l) / eval(a->r);
+    break;
+  case '|':
+    v = fabs(eval(a->l));
+    break;
+  case 'M':
+    v = -eval(a->l);
+    break;
 
     /* comparisons */
-  case '1': v = (eval(a->l) > eval(a->r))? 1 : 0; break;
-  case '2': v = (eval(a->l) < eval(a->r))? 1 : 0; break;
-  case '3': v = (eval(a->l) != eval(a->r))? 1 : 0; break;
-  case '4': v = (eval(a->l) == eval(a->r))? 1 : 0; break;
-  case '5': v = (eval(a->l) >= eval(a->r))? 1 : 0; break;
-  case '6': v = (eval(a->l) <= eval(a->r))? 1 : 0; break;
+  case '1':
+    v = (eval(a->l) > eval(a->r)) ? 1 : 0;
+    break;
+  case '2':
+    v = (eval(a->l) < eval(a->r)) ? 1 : 0;
+    break;
+  case '3':
+    v = (eval(a->l) != eval(a->r)) ? 1 : 0;
+    break;
+  case '4':
+    v = (eval(a->l) == eval(a->r)) ? 1 : 0;
+    break;
+  case '5':
+    v = (eval(a->l) >= eval(a->r)) ? 1 : 0;
+    break;
+  case '6':
+    v = (eval(a->l) <= eval(a->r)) ? 1 : 0;
+    break;
 
   /* control flow */
   /* null if/else/do expressions allowed in the grammar, so check for them */
-  case 'I': 
-    if( eval( ((struct flow *)a)->cond) != 0) {
-      if( ((struct flow *)a)->tl) {
-	v = eval( ((struct flow *)a)->tl);
-      } else
-	v = 0.0;		/* a default value */
-    } else {
-      if( ((struct flow *)a)->el) {
+  case 'I':
+    if (eval(((struct flow *)a)->cond) != 0)
+    {
+      if (((struct flow *)a)->tl)
+      {
+        v = eval(((struct flow *)a)->tl);
+      }
+      else
+        v = 0.0; /* a default value */
+    }
+    else
+    {
+      if (((struct flow *)a)->el)
+      {
         v = eval(((struct flow *)a)->el);
-      } else
-	v = 0.0;		/* a default value */
+      }
+      else
+        v = 0.0; /* a default value */
     }
     break;
 
   case 'W':
-    v = 0.0;		/* a default value */
-    
-    if( ((struct flow *)a)->tl) {
-      while( eval(((struct flow *)a)->cond) != 0)
-	v = eval(((struct flow *)a)->tl);
+    v = 0.0; /* a default value */
+
+    if (((struct flow *)a)->tl)
+    {
+      while (eval(((struct flow *)a)->cond) != 0)
+        v = eval(((struct flow *)a)->tl);
     }
-    break;			/* last value is value */
-	              
-  case 'L': eval(a->l); v = eval(a->r); break;
+    break; /* last value is value */
 
-  case 'F': v = callbuiltin((struct fncall *)a); break;
+  case 'L':
+    eval(a->l);
+    v = eval(a->r);
+    break;
 
-  case 'C': v = calluser((struct ufncall *)a); break;
+  case 'F':
+    v = callbuiltin((struct fncall *)a);
+    break;
 
-  default: printf("internal error: bad node %c\n", a->nodetype);
+  case 'C':
+    v = calluser((struct ufncall *)a);
+    break;
+
+  default:
+    printf("internal error: bad node %c\n", a->nodetype);
   }
   return v;
 }
@@ -287,33 +405,35 @@ callbuiltin(struct fncall *f)
   enum bifs functype = f->functype;
   double v = eval(f->l);
 
- switch(functype) {
- case B_sqrt:
-   return sqrt(v);
- case B_exp:
-   return exp(v);
- case B_log:
-   return log(v);
- case B_print:
-   printf("%4.4g\n", v);
-   return v;
- default:
-   yyerror("Unknown built-in function %d", functype);
-   return 0.0;
- }
+  switch (functype)
+  {
+  case B_sqrt:
+    return sqrt(v);
+  case B_exp:
+    return exp(v);
+  case B_log:
+    return log(v);
+  case B_print:
+    printf("%4.4g\n", v);
+    return v;
+  default:
+    yyerror("Unknown built-in function %d", functype);
+    return 0.0;
+  }
 }
 
 static double calluser(struct ufncall *func)
 {
-  struct symbol *fn = func->s;	/* function name */
-  struct symlist *dummy_args;	/* dummy arguments */
-  struct ast *actual_args = func->l;	/* actual arguments */
-  double *old_val, *new_val;	/* saved arg values */
+  struct symbol *fn = func->s;       /* function name */
+  struct symlist *dummy_args;        /* dummy arguments */
+  struct ast *actual_args = func->l; /* actual arguments */
+  double *old_val, *new_val;         /* saved arg values */
   double result;
   int num_args;
   int i;
 
-  if (!fn->func) {
+  if (!fn->func)
+  {
     yyerror("call to undefined function", fn->name);
     return 0;
   }
@@ -326,32 +446,39 @@ static double calluser(struct ufncall *func)
   /* prepare to save them */
   old_val = (double *)malloc(num_args * sizeof(double));
   new_val = (double *)malloc(num_args * sizeof(double));
-  if (!old_val || !new_val) {
+  if (!old_val || !new_val)
+  {
     yyerror("Out of space in %s", fn->name);
     return 0.0;
   }
-  
+
   /* evaluate the arguments */
-  for (i = 0; i < num_args; i++) {
-    if (!actual_args) {
+  for (i = 0; i < num_args; i++)
+  {
+    if (!actual_args)
+    {
       yyerror("too few args in call to %s", fn->name);
-      free(old_val); 
+      free(old_val);
       free(new_val);
       return 0;
     }
 
-    if (actual_args->nodetype == 'L') {	/* if this is a list node */
+    if (actual_args->nodetype == 'L')
+    { /* if this is a list node */
       new_val[i] = eval(actual_args->l);
       actual_args = actual_args->r;
-    } else {			/* if it's the end of the list */
+    }
+    else
+    { /* if it's the end of the list */
       new_val[i] = eval(actual_args);
       actual_args = NULL;
     }
   }
-		     
+
   /* save old values of dummies, assign new ones */
   dummy_args = fn->syms;
-  for (i = 0; i < num_args; i++) {
+  for (i = 0; i < num_args; i++)
+  {
     struct symbol *sym = dummy_args->sym;
 
     old_val[i] = sym->value;
@@ -366,7 +493,8 @@ static double calluser(struct ufncall *func)
 
   /* put the dummies back */
   dummy_args = fn->syms;
-  for (i = 0; i < num_args; i++) {
+  for (i = 0; i < num_args; i++)
+  {
     struct symbol *sym = dummy_args->sym;
 
     sym->value = old_val[i];
@@ -377,49 +505,118 @@ static double calluser(struct ufncall *func)
   return result;
 }
 
-
-void
-treefree(struct ast *a)
+static double
+pushClass(struct ast *a)
 {
-  switch(a->nodetype) {
+  struct symbol *s = (struct symbol *)(a->l);
+  struct symbol *v = (struct symbol *)(a->r);
+
+  struct symlist *new_node = malloc(sizeof(struct symlist));
+  new_node->sym = v;
+  new_node->next = NULL;
+
+  if (!(s->syms))
+  {
+    s->syms = new_node;
+    printf("first node added!\n");
+    return 0;
+  }
+
+  struct symlist *head = s->syms;
+  while (head->next)
+  {
+    head = head->next;
+  }
+  head->next = new_node;
+  printf("new node added!\n");
+  return 0;
+}
+
+static double
+makeObj(struct ast *a)
+{
+  struct symbol *s = (struct symbol *)(a->l);
+  struct symbol *v = (struct symbol *)(a->r);
+
+  if (!(s->syms))
+  {
+    printf("Something is wrong. This class has no members\n");
+    return 0;
+  }
+  struct symlist *head = s->syms;
+  char *c;
+  while (head->next)
+  {
+    c = head->sym->name;
+    strcat(c, strdup("000"));
+    strcat(c, v->name);
+    find_or_create_symbol(c);
+    head = head->next;
+  }
+  c = head->sym->name;
+  strcat(c, strdup("000"));
+  strcat(c, v->name);
+  find_or_create_symbol(c);
+  printf("obj created\n");
+  return 0;
+}
+
+void treefree(struct ast *a)
+{
+  switch (a->nodetype)
+  {
 
     /* two subtrees */
   case '+':
   case '-':
   case '*':
   case '/':
-  case '1':  case '2':  case '3':  case '4':  case '5':  case '6':
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+  case '5':
+  case '6':
   case 'L':
     treefree(a->r);
 
     /* one subtree */
   case '|':
-  case 'M': case 'C': case 'F':
+  case 'M':
+  case 'C':
+  case 'F':
     treefree(a->l);
 
     /* no subtree */
-  case 'K': case 'N':
+  case 'K':
+  case 'N':
     break;
 
   case '=':
-    free( ((struct symasgn *)a)->v);
+    free(((struct symasgn *)a)->v);
     break;
 
-  case 'I': case 'W':
-    free( ((struct flow *)a)->cond);
-    if( ((struct flow *)a)->tl) free( ((struct flow *)a)->tl);
-    if( ((struct flow *)a)->el) free( ((struct flow *)a)->el);
+  case 'I':
+  case 'W':
+    free(((struct flow *)a)->cond);
+    if (((struct flow *)a)->tl)
+      free(((struct flow *)a)->tl);
+    if (((struct flow *)a)->el)
+      free(((struct flow *)a)->el);
     break;
 
-  default: printf("internal error: free bad node %c\n", a->nodetype);
-  }	  
-  
+  case 'P':
+  case 'O':
+    break;
+
+  default:
+    printf("internal error: free bad node %c\n", a->nodetype);
+  }
+
   free(a); /* always free the node itself */
-
 }
 
-void
-yyerror(char *s, ...)
+void yyerror(char *s, ...)
 {
   va_list ap;
   va_start(ap, s);

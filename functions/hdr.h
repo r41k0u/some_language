@@ -60,6 +60,12 @@ struct ast {
   struct ast *r;
 };
 
+struct classMem {
+  int nodetype;
+  struct symbol *l;
+  struct symbol *r;
+};
+
 struct fncall {			/* built-in function */
   int nodetype;			/* type F */
   struct ast *l;
@@ -104,9 +110,13 @@ struct ast *newref(struct symbol *s);
 struct ast *create_assignment(struct symbol *s, struct ast *v);
 struct ast *newnum(double d);
 struct ast *newflow(int nodetype, struct ast *cond, struct ast *tl, struct ast *tr);
+struct ast *newClassMem(struct symbol *s, struct symbol *v);
+struct ast *newClassObj(struct symbol *s, struct symbol *v);
 
 /* define a function */
 void dodef(struct symbol *name, struct symlist *syms, struct ast *stmts);
+
+void doclassdef(struct symbol *pre, struct symbol *name, struct symlist *syms, struct ast *stmts);
 
 /* evaluate an AST */
 double eval(struct ast *);

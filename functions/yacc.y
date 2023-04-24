@@ -57,9 +57,8 @@ c_stmt: exp EOL                   { $$ = $1; }
    | EOL                     { $$ = create_ast('L', NULL, NULL); }
    | IF '(' exp ')' c_stmt ELSE c_stmt ENDIF  { $$ = newflow('I', $3, $5, $7); }
    | WHILE '(' exp ')' c_stmt        { $$ = newflow('W', $3, $5, NULL); }
-   | CLASS NAME NAME EOL ENDCLASS   {$$ = create_ast('L', NULL, NULL);}
-   | CLASS NAME LET NAME '(' symlist ')' '=' list ENDDEF ENDCLASS {$$ = create_ast('L', NULL, NULL);}
-   | MAKEOBJ NAME NAME EOL {$$ = create_ast('L', NULL, NULL);}
+   | CLASS NAME NAME EOL ENDCLASS   {$$ = newClassMem($2, $3);}
+   | MAKEOBJ NAME NAME EOL {$$ = newClassObj($2, $3);}
    ;
 
 list: stmt
@@ -96,7 +95,10 @@ calclist: /* nothing */
   | calclist LET NAME '(' symlist ')' '=' list ENDDEF {
                        dodef($3, $5, $8);
                        printf("Defined %s\n", $3->name); }
-
+  | calclist CLASS NAME LET NAME '(' symlist ')' '=' list ENDDEF ENDCLASS {
+                       doclassdef($3, $5, $7, $10);
+                       printf("Defined %s\n", $3->name);
+  }
   | calclist error EOL { yyerrok; }
  ;
 
@@ -109,7 +111,8 @@ int main(int argc, char *argv[])
       return yyparse();
     }
 
-    FILE *input_file = fopen(argv[1], "r");
+   if (argc == 2) {
+    input_file = fopen(argv[1], "r");
     if (!input_file) {
         perror("Error opening input file");
         return 1;
@@ -118,7 +121,7 @@ int main(int argc, char *argv[])
 
     yyin = input_file;  // assign file pointer to yyin
     yyparse();
-    fclose(input_file);  // close the input file
+    fclose(input_file);} // close the input file
 
    return 0;
 }
