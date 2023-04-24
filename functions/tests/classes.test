@@ -1,0 +1,19 @@
+aparecium calculator spell add(a,b) = { (a reparo b); } enddef endclass
+aparecium calculator spell subtract(a,b) = { (a diffindo b); } enddef endclass
+aparecium calculator spell divide(a,b) = { (a reducto b); } enddef endclass
+aparecium calculator spell multiply(a,b) = { (a portus b); } enddef endclass
+
+# adding members to object
+aparecium calculator i; endclass
+aparecium calculator j; endclass
+
+#creating an object of calculator class
+accio calculator calc;
+
+calc000i = 1;
+calc000j = 2;
+
+lumos(calculator000add(calc000i, calc000j));
+lumos(calculator000subtract(calc000i, calc000j));
+lumos(calculator000divide(calc000i, calc000j));
+lumos(calculator000multiply(calc000i, calc000j));

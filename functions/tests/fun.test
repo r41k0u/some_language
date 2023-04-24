@@ -1,9 +1,9 @@
-let jojo(a) = {
+spell jojo(a) = {
     lumos(0);
     lumos(1);
 } enddef
 
-let summer(a,b) = {
+spell summer(a,b) = {
     (a reparo b);
 } enddef
 
