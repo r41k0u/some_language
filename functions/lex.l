@@ -9,7 +9,7 @@
 %option noyywrap nodefault yylineno
 %{
 # include "hdr.h"
-# include "yacc.tab.h"
+# include "y.tab.h"
 %}
 
 /* float exponent */
