@@ -30,6 +30,7 @@ duro return '%';
 "}" |
 ")"     { return yytext[0]; }
 
+
  /* comparison ops */
 anapneo     { yylval.fn = 1; return CMP; }
 calvorio     { yylval.fn = 2; return CMP; }
@@ -37,6 +38,10 @@ confundo    { yylval.fn = 3; return CMP; }
 equo    { yylval.fn = 4; return CMP; }
 amato    { yylval.fn = 5; return CMP; }
 animo    { yylval.fn = 6; return CMP; }
+expulso  { yylval.fn = 7; return XOR; }
+ascendio { yylval.fn = 8; return AND; }
+avifors  { yylval.fn = 9; return OR; }
+confringo { yylval.fn = 10; return NOT; }
 
  /* keywords */
 

@@ -328,24 +328,16 @@ eval(struct ast *a)
     break;
 
     /* comparisons */
-  case '1':
-    v = (eval(a->l) > eval(a->r)) ? 1 : 0;
-    break;
-  case '2':
-    v = (eval(a->l) < eval(a->r)) ? 1 : 0;
-    break;
-  case '3':
-    v = (eval(a->l) != eval(a->r)) ? 1 : 0;
-    break;
-  case '4':
-    v = (eval(a->l) == eval(a->r)) ? 1 : 0;
-    break;
-  case '5':
-    v = (eval(a->l) >= eval(a->r)) ? 1 : 0;
-    break;
-  case '6':
-    v = (eval(a->l) <= eval(a->r)) ? 1 : 0;
-    break;
+  case '1': v = (eval(a->l) > eval(a->r))? 1 : 0; break;
+  case '2': v = (eval(a->l) < eval(a->r))? 1 : 0; break;
+  case '3': v = (eval(a->l) != eval(a->r))? 1 : 0; break;
+  case '4': v = (eval(a->l) == eval(a->r))? 1 : 0; break;
+  case '5': v = (eval(a->l) >= eval(a->r))? 1 : 0; break;
+  case '6': v = (eval(a->l) <= eval(a->r))? 1 : 0; break;
+  case '7': v = ((int)eval(a->l) ^ (int)eval(a->r))? 1 : 0; break;
+  case '8': v = ((int)eval(a->l) & (int)eval(a->r))? 1 : 0; break;
+  case '9': v = ((int)eval(a->l) | (int)eval(a->r))? 1 : 0; break;
+  case '10': v = (!(int)eval(a->l))? 1 : 0; break;
 
   /* control flow */
   /* null if/else/do expressions allowed in the grammar, so check for them */
@@ -604,6 +596,8 @@ void treefree(struct ast *a)
     if (((struct flow *)a)->el)
       free(((struct flow *)a)->el);
     break;
+  
+  case 55: case 56: case 57: break;
 
   case 'P':
   case 'O':

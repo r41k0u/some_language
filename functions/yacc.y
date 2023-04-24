@@ -34,6 +34,7 @@ extern FILE *yyin;
 %right '='
 %left '+' '-'
 %left '*' '/'
+%left <fn> AND OR XOR NOT
 %nonassoc '|' UMINUS
 
 %type <a> exp stmt list explist c_stmt o_stmt
@@ -66,6 +67,10 @@ list: stmt
    ;
 
 exp: exp CMP exp          { $$ = newcmp($2, $1, $3); }
+   | exp XOR exp          {$$ = newcmp($2, $1, $3);}
+   | exp OR exp           {$$ = newcmp($2, $1, $3);}
+   | exp AND exp          {$$ = newcmp($2, $1, $3);}
+   | NOT exp               {$$ = newcmp($1, $2, NULL);}
    | exp '+' exp          { $$ = create_ast('+', $1,$3); }
    | exp '-' exp          { $$ = create_ast('-', $1,$3);}
    | exp '*' exp          { $$ = create_ast('*', $1,$3); }
