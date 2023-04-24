@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
     }
 
    if (argc == 2) {
-    input_file = fopen(argv[1], "r");
+    FILE *input_file = fopen(argv[1], "r");
     if (!input_file) {
         perror("Error opening input file");
         return 1;
