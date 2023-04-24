@@ -63,5 +63,6 @@ accio     {return MAKEOBJ;}
 ";"    { return EOL; }
 "/*"([^*]|\*+[^*/])*\*+"/"
 
+[a-zA-Z][a-zA-Z0-9]*=>[a-zA-Z][a-zA-Z0-9]* { yylval.s = find_or_create_symbol(yytext); return NAME; }
 .	{ yyerror("Mystery character %c\n", *yytext); }
 %%

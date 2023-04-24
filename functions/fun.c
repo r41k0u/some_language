@@ -258,7 +258,7 @@ void doclassdef(struct symbol *pre, struct symbol *name, struct symlist *syms, s
 {
   char p[100];
   strcpy(p, pre->name);
-  strcat(p, strdup("000"));
+  strcat(p, strdup("=>"));
   strcat(p, name->name);
   struct symbol *jojo = find_or_create_symbol(p);
   dodef(jojo, syms, func);
@@ -540,13 +540,13 @@ makeObj(struct ast *a)
   while (head->next)
   {
     c = head->sym->name;
-    strcat(c, strdup("000"));
+    strcat(c, strdup("=>"));
     strcat(c, v->name);
     find_or_create_symbol(c);
     head = head->next;
   }
   c = head->sym->name;
-  strcat(c, strdup("000"));
+  strcat(c, strdup("=>"));
   strcat(c, v->name);
   find_or_create_symbol(c);
   printf("obj created\n");
