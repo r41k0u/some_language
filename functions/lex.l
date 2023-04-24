@@ -1,11 +1,3 @@
-/* Companion source code for "flex & bison", published by O'Reilly
- * Media, ISBN 978-0-596-15597-1
- * Copyright (c) 2009, Taughannock Networks. All rights reserved.
- * See the README file for license conditions and contact info.
- * $Header: /home/johnl/flnb/code/RCS/fb3-2.l,v 2.1 2009/11/08 02:53:18 johnl Exp $
- */
-/* recognize tokens for the calculator */
-
 %option noyywrap nodefault yylineno
 %{
 # include "hdr.h"
@@ -48,12 +40,12 @@ confringo { yylval.fn = 10; return NOT; }
 expecto    { return IF; }
 patronum  { return ELSE; }
 alohomora { return WHILE; }
-let   { return LET;}
+spell   { return LET;}
 endif   {return ENDIF;}
 enddef  {return ENDDEF;}
-makeclass       {return CLASS;}
+aparecium       {return CLASS;}
 endclass    {return ENDCLASS;}
-makeobj     {return MAKEOBJ;}
+accio     {return MAKEOBJ;}
 
  /* built in functions */
 "sqrt"  { yylval.fn = B_sqrt; return FUNC; }
@@ -69,6 +61,7 @@ makeobj     {return MAKEOBJ;}
 [ \t\n]   /* ignore white space */
 \\\n    printf("c> "); /* ignore line continuation */
 ";"    { return EOL; }
+"/*"([^*]|\*+[^*/])*\*+"/"
 
 .	{ yyerror("Mystery character %c\n", *yytext); }
 %%

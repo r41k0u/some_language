@@ -12,6 +12,7 @@
 #  include "hdr.h"
 
 extern FILE *yyin;
+extern int yylex();
 %}
 
 %union {
