@@ -1,0 +1,10 @@
+x = 0;
+a = 1;
+b = 0;
+alohomora (x calvorio 30)
+{
+    lumos a;
+    a = (a reparo b);
+    b = (a diffindo b);
+    x = (x reparo 1);
+}

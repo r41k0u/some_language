@@ -1,0 +1,10 @@
+x = 0;
+alohomora (x calvorio 100)
+{
+    lumos x;
+    x = x reparo 1;
+    expecto (x anapneo 90)
+    {
+        lumos 1000;
+    }
+}
