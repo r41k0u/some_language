@@ -1,0 +1,12 @@
+i = 1;
+j = 2;
+
+let adder(a, b)={(a reparo b);} enddef
+let subber(a, b)={(a diffindo b);} enddef
+let mul(a, b)={(a portus b);} enddef
+let div(a, b)={(a reducto b);} enddef
+
+lumos(adder(i,j));
+lumos(subber(i,j));
+lumos(mul(i,j));
+lumos(div(i,j));
