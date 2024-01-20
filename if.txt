@@ -1,8 +1,0 @@
-x = 7;
-expecto (x anapneo 5)
-{
-    expecto (x calvorio 10)
-    {
-        lumos x;
-    }
-}
